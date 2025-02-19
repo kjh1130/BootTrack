@@ -1,13 +1,23 @@
 package com.BootTrack.Forum;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.BootTrack.Forum.Entity.Answer;
 import com.BootTrack.Forum.Entity.Question;
+import com.BootTrack.Forum.Repository.AnswerRepository;
 import com.BootTrack.Forum.Repository.QuestionRepository;
+
 
 @SpringBootTest
 class ForumApplicationTests {
@@ -15,18 +25,18 @@ class ForumApplicationTests {
 	@Autowired
 	private QuestionRepository questionRepository;
 	
+	@Autowired
+	private AnswerRepository answerRepository;
+	
+	@Transactional
 	@Test
 	void testJpa() {
-		Question q1 = new Question();
-		q1.setSubject("SpringBoot는 어떻게 사용하나요?");
-		q1.setContent("SpringBoot에 대해서 알고 싶습니다.");
-		q1.setCreateDate(LocalDateTime.now());
-		this.questionRepository.save(q1);
+		Optional<Question> oq = this.questionRepository.findById(6);
+		assertTrue(oq.isPresent());
+		Question q = oq.get();
 		
-		Question q2 = new Question();
-		q2.setSubject("DB 관련 질문입니다.");
-		q2.setContent("DB연결은 어떻게 하나요?");
-		q2.setCreateDate(LocalDateTime.now());
-		this.questionRepository.save(q2);
+		List<Answer> answerList = q.getAnswerList();
+		assertEquals(1,answerList.size());
+		assertEquals("가벼운 DB인 H2로 먼저 해보세요.",answerList.get(0).getContent());
 	}
 }
