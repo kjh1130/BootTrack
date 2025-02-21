@@ -1,8 +1,11 @@
 package com.BootTrack.Forum.Controller;
 
+import com.BootTrack.Forum.Entity.SiteUser;
 import com.BootTrack.Forum.Form.AnswerForm;
+import com.BootTrack.Forum.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +20,8 @@ import com.BootTrack.Forum.Service.QuestionService;
 
 import lombok.RequiredArgsConstructor;
 
+import java.security.Principal;
+
 @RequestMapping("/answer")
 @RequiredArgsConstructor
 @Controller
@@ -27,10 +32,15 @@ public class AnswerController {
 	
 	@Autowired
 	private AnswerService answerService;
-	
+
+	@Autowired
+	private UserService userService;
+
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/create/{id}")
-	public String createAnswer(Model model, @PathVariable("id") Integer id, @Valid AnswerForm answerForm, BindingResult bindingResult) {
+	public String createAnswer(Model model, @PathVariable("id") Integer id, @Valid AnswerForm answerForm, BindingResult bindingResult, Principal principal) {
 		Question question = this.questionService.getQuestion(id);
+		SiteUser siteUser = this.userService.getUser(principal.getName());
 		if (bindingResult.hasErrors()) {
 			if (question != null) {
 				model.addAttribute("question", question);
@@ -39,7 +49,7 @@ public class AnswerController {
 			model.addAttribute("answerForm", new AnswerForm());
 			return "answer_form";
 		}
-		this.answerService.create(question, answerForm.getContent());
+		this.answerService.create(question, answerForm.getContent(), siteUser);
 		return String.format("redirect:/question/detail/%s", id);
 	}
 
