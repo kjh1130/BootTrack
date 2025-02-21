@@ -13,8 +13,8 @@
 			<tr class="text-center" th:each="question, loop : ${paging}">
 				<td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
 				<td class="text-start">
-					<a th:href="@{|detail/${question.id}|}"
-					th:text="${question.subject}"></a>
+					<b th:onclick="|window.location.href='@{|detail/${question.id}|}'|"
+					th:text="${question.subject}"></b>
 					<span class="text-danger small ms-2"
 						  th:if="${#lists.size(question.answerList) > 0}"
 						  th:text="${#lists.size(question.answerList)}"></span>
