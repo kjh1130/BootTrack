@@ -2,6 +2,7 @@ package com.BootTrack.Forum.Entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -30,4 +31,7 @@ public class Question {
 	private SiteUser author;
 
 	private LocalDateTime modifyDate;
+
+	@ManyToMany
+	Set<SiteUser> voter;
 }
